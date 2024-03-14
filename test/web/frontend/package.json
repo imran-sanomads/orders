@@ -1,0 +1,64 @@
+{
+  "name": "frontend",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@formatjs/intl-locale": "^3.4.5",
+    "@formatjs/intl-localematcher": "^0.5.4",
+    "@formatjs/intl-pluralrules": "^5.2.12",
+    "@shopify/app-bridge": "^3.7.10",
+    "@shopify/app-bridge-react": "^3.7.10",
+    "@shopify/app-bridge-utils": "^3.5.1",
+    "@shopify/i18next-shopify": "^0.2.9",
+    "@shopify/polaris": "^12.12.1",
+    "@testing-library/jest-dom": "^5.17.0",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^13.5.0",
+    "@vitejs/plugin-react": "^4.2.1",
+    "axios": "^1.6.7",
+    "dotenv": "^16.4.5",
+    "i18next": "^23.7.16",
+    "i18next-resources-to-backend": "^1.2.0",
+    "meta": "^2.2.25",
+    "navigate": "^0.3.6",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-i18next": "^14.0.0",
+    "react-query": "^3.39.3",
+    "react-router": "^6.21.3",
+    "react-router-dom": "^6.21.3",
+    "react-scripts": "^5.0.1",
+    "vite": "^4.3.9",
+    "web-vitals": "^2.1.4"
+  },
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite",
+    "coverage": "vitest run --coverage"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "type": "module",
+  "engines": {
+    "node": ">= 12.16"
+  },
+  "stylelint": {
+    "extends": "@shopify/stylelint-polaris"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
