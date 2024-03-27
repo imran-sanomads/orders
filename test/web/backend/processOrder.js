@@ -6,22 +6,27 @@ const baseUrl = "https://sn-imran-testing-two.myshopify.com";
 const accessToken = process.env.STORE_B_ACCESS_TOKEN;
 const storeAUrl = "https://sn-imran-testing.myshopify.com";
 const storeAAccessToken = process.env.STORE_A_ACCESS_TOKEN;
+
 async function processOrder(orderData) {
     try {
-        const storeBProducts = await fetchProducts();
-        console.log("Store B Products:");
+        
         const matchingProducts = [];
         for (const lineItem of orderData.line_items) {
             const productName = lineItem.title;
             const sku = lineItem.sku;
-            const matchingProduct = storeBProducts.find(product => {
-                return product.variants.some(variant => variant.sku === sku);
-            });
-            console.log("match:",matchingProduct);
+            const variantId = lineItem.variant_id.toString();
+            const matchingProduct = await fetchProducts(variantId, sku);
+            console.log("match:", matchingProduct);
             if (matchingProduct) {
                 console.log(`Matching product found for: ${productName}`);
+                let variant_id;
+                if (matchingProduct.id1 === lineItem.variant_id.toString()) {
+                    variant_id = matchingProduct.id2;
+                } else {
+                    variant_id = matchingProduct.id1;
+                }
                 matchingProducts.push({
-                    variant_id: matchingProduct.variants[0].id,
+                    variant_id: variant_id,
                     quantity: lineItem.quantity,
                 });
             } else {
@@ -32,7 +37,7 @@ async function processOrder(orderData) {
             const storeBOrder = {
                 line_items: matchingProducts,
                 customer: orderData.customer,
-                tags: `${orderData.id}`, 
+                tags: `${orderData.id}`,
             };
             const response = await axios.post(
                 `${baseUrl}/admin/api/2024-01/orders.json`,
@@ -45,20 +50,20 @@ async function processOrder(orderData) {
                 }
             );
             if (response.status === 201) {
-                console.log(`Order created in Store B successfully.`,response);
+                console.log(`Order created in Store B successfully.`, response.data);
                 const storeBOrderId = response.data.order.id;
-                console.log("id:",storeBOrderId);
+                console.log("id:", storeBOrderId);
                 // Update Store A order tags with Store B order ID
                 const storeAOrderUpdate = {
                     order: {
-                        id:  parseInt(orderData.id),
+                        id: parseInt(orderData.id),
                         tags: `${storeBOrderId}`,
                     },
                 };
-                console.log("update:",storeAOrderUpdate);
+                console.log("update:", storeAOrderUpdate);
                 const updateResponse = await axios.put(
                     `${storeAUrl}/admin/api/2024-01/orders/${orderData.id}.json`,
-                     storeAOrderUpdate ,
+                    storeAOrderUpdate,
                     {
                         headers: {
                             "X-Shopify-Access-Token": storeAAccessToken,
@@ -81,4 +86,5 @@ async function processOrder(orderData) {
         console.error("Error processing order:", error.response ? error.response.data : error);
     }
 }
+
 export default processOrder;

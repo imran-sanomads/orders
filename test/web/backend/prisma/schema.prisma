@@ -29,3 +29,10 @@ model product {
   variants         Json[]
   options          Json[]
 }
+
+model ProductVariant {
+  id    Int    @id @default(autoincrement())
+  sku   String
+  id1   String     @unique
+  id2   String     @unique
+}

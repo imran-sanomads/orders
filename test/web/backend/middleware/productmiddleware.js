@@ -3,10 +3,36 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 export const fetchAndSaveProducts = async () => {
   let pageInfo;
+  let skuIdMap = {};
   do {
     const productsFromFetchProducts = await fetchProducts();
     const allProducts = [...productsFromFetchProducts];
     for (const product of allProducts) {
+      for (const variant of product.variants) {
+        if (variant.sku && variant.sku !== "No SKU") {
+          if (!skuIdMap[variant.sku]) {
+            skuIdMap[variant.sku] = [];
+          } 
+          skuIdMap[variant.sku].push(variant.id);
+          if (skuIdMap[variant.sku].length > 1) {
+            const existingRecord = await prisma.productVariant.findFirst({
+              where: {
+                id1: skuIdMap[variant.sku][0].toString(),
+                id2: skuIdMap[variant.sku][1].toString(),
+              },
+            });
+            if (!existingRecord) {
+              await prisma.ProductVariant.create({
+                data: {
+                  sku: variant.sku,
+                  id1: skuIdMap[variant.sku][0].toString(),
+                  id2: skuIdMap[variant.sku][1].toString(),
+                },
+              });
+            }
+          }
+        }
+      }
       const existingProduct = await prisma.product.findUnique({
         where: {
           product_id: product.id.toString(),
